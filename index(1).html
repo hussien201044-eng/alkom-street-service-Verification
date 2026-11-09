@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="دليل تجريبي للخدمات والمحلات والحرفيين في نطاق الشارع ومحيط نادي الكوم الأخضر.">
+    <meta name="theme-color" content="#1E3A3A">
+    <meta name="robots" content="index,follow">
+    <title>منصة خدمات الشارع ونادي الكوم الأخضر | النسخة التجريبية</title>
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تحميل خط Cairo و Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+    <!-- تحميل أيقونات Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        creamBg: '#FAF9F6',
+                        deepTeal: '#1E3A3A',
+                        deepTealLight: '#2B5252',
+                        terracotta: '#D97706',
+                        terracottaDark: '#B45309',
+                        whatsapp: '#25D366',
+                        whatsappDark: '#1EBE5D'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FAF9F6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* إخفاء شريط التمرير الأفقي لأزرار الفلترة مع إبقاء التمرير نشطاً */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .service-card {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        }
+        .service-card:active {
+            transform: scale(0.98);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-animate {
+            animation: slideUp 0.28s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-stone-800 antialiased min-h-screen flex flex-col justify-between pb-20">
+    <!-- الهيدر العلوي بتدرج الألوان الدافئة -->
+    <header class="bg-gradient-to-bl from-deepTeal via-deepTealLight to-deepTeal text-white rounded-b-3xl shadow-lg px-4 pt-7 pb-8 relative overflow-hidden">
+        <div class="absolute -top-12 -left-12 w-44 h-44 bg-terracotta opacity-15 rounded-full blur-xl"></div>
+        <div class="absolute -bottom-10 right-4 w-32 h-32 bg-white opacity-5 rounded-full"></div>
+
+        <div class="max-w-lg mx-auto relative z-10">
+            <div class="flex items-center justify-between mb-3 gap-2">
+                <span class="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-amber-200">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-terracotta"></i>
+                    <span>نطاق الشارع ومحيط نادي الكوم الأخضر</span>
+                </span>
+                <span class="text-[11px] text-stone-200 font-bold bg-black/25 px-2.5 py-1 rounded-lg shrink-0">10 أقسام تجريبية</span>
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-1.5">منصة خدمات الشارع ونادي الكوم الأخضر</h1>
+            <p class="text-stone-200 text-sm leading-relaxed mb-5">
+                دليل تجريبي لخدمات ومحلات وصنايعية المنطقة ومحيط نادي الكوم الأخضر. راجع بيانات النشاط والسعر والتوافر مع مقدم الخدمة قبل تأكيد أي طلب.
+            </p>
+
+            <!-- شريط البحث الفوري -->
+            <div class="relative">
+                <input type="text" id="searchInput" oninput="filterServices()" 
+                       placeholder="ابحث عن خدمة: بيتزا، سيكوريت، صيدلية، مطبعة، حلاق..." 
+                       class="w-full pl-10 pr-11 py-3.5 rounded-2xl bg-white text-stone-900 placeholder-stone-400 text-sm font-bold shadow-md focus:outline-none focus:ring-2 focus:ring-terracotta">
+                <i data-lucide="search" class="w-5 h-5 text-stone-400 absolute right-3.5 top-3.5"></i>
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute left-3 top-3 text-stone-400 hover:text-stone-600 p-0.5">
+                    <i data-lucide="x-circle" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- شريط التصنيفات السريعة -->
+    <nav class="max-w-lg w-full mx-auto px-4 mt-4">
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="categoryTabs">
+            <button onclick="setCategory('all', this)" class="cat-btn active shrink-0 px-4 py-2 rounded-xl text-xs font-extrabold bg-deepTeal text-white shadow-sm transition">
+                الكل (10)
+            </button>
+            <button onclick="setCategory('food-health', this)" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold bg-white text-stone-600 border border-stone-200 hover:bg-stone-50 transition">
+                أكل وصيدلية
+            </button>
+            <button onclick="setCategory('home-daily', this)" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold bg-white text-stone-600 border border-stone-200 hover:bg-stone-50 transition">
+                البيت والمطبعة والخدمات
+            </button>
+            <button onclick="setCategory('crafts-auto', this)" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold bg-white text-stone-600 border border-stone-200 hover:bg-stone-50 transition">
+                حرف وصنايعية وسيارات
+            </button>
+        </div>
+    </nav>
+
+    <!-- شبكة الخدمات العشرة -->
+    <main class="max-w-lg w-full mx-auto px-4 mt-4 flex-grow">
+        <div id="servicesGrid" class="grid grid-cols-1 gap-3.5">
+            <!-- يتم توليد البطاقات ديناميكياً عبر الجافاسكريبت -->
+        </div>
+
+        <!-- رسالة في حالة عدم وجود نتائج بحث -->
+        <div id="emptyState" class="hidden text-center py-12 px-4 bg-white rounded-3xl border border-stone-100 mt-4">
+            <div class="w-14 h-14 bg-amber-50 text-terracotta rounded-full flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="search-x" class="w-7 h-7"></i>
+            </div>
+            <h3 class="font-bold text-stone-800 text-base">لم نجد خدمة مطابقة لبحثك</h3>
+            <p class="text-xs text-stone-500 mt-1 mb-4">جرب البحث بكلمة أخرى أو تواصل معنا مباشرة وسنوفر لك طلبك فوراً.</p>
+            <button onclick="clearSearch()" class="px-5 py-2.5 bg-deepTeal text-white text-xs font-bold rounded-xl">عرض كل الخدمات</button>
+        </div>
+
+        <!-- قسم انضمام أصحاب المحلات والحرفيين بنظام الاعتماد 14 يوم والتخصيص بعربون 500 جنيه -->
+        <section class="mt-8 bg-gradient-to-l from-amber-50 via-orange-50/70 to-amber-50 border border-amber-300/80 rounded-3xl p-5 shadow-xs">
+            <div class="flex items-start gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-terracotta text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <i data-lucide="store" class="w-6 h-6"></i>
+                </div>
+                <div class="flex-grow">
+                    <span class="inline-block text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-deepTeal text-amber-200 mb-1">خطة الانضمام والتخصيص الاستثماري</span>
+                    <h2 class="text-base font-extrabold text-stone-900">صاحب محل أو صنايعي في الشارع أو محيط الكوم الأخضر؟</h2>
+                    <p class="text-xs text-stone-600 mt-1 leading-relaxed">
+                        ابدأ بفترة <strong>اعتماد وتجربة 14 يوماً على الموقع العام</strong>، وبعدها احصل على <strong>تخصيص صفحة مستقلة + منيو خاص + باركود مطبوع</strong> من مطبعتنا الرسمية عند سداد عربون جدية <strong>500 جنيه</strong>.
+                    </p>
+                    <button onclick="openShopRegistrationModal()" 
+                            class="mt-3.5 w-full sm:w-auto px-5 py-3 rounded-xl bg-deepTeal hover:bg-deepTealLight text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-amber-300"></i>
+                        <span>سجل نشاطك الآن (اعتماد 14 يوم / تخصيص 500 ج)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- تذييل الصفحة -->
+    <footer class="max-w-lg w-full mx-auto text-center py-6 px-4 text-stone-400 text-xs mt-4">
+        <p class="font-bold text-stone-700">منصة خدمات الشارع ونادي الكوم الأخضر</p>\n        <p class="mt-1 text-amber-700">نسخة تجريبية: بيانات الأنشطة والأسعار والتوثيق تحتاج مراجعة قبل الاعتماد.</p>
+        <p class="mt-1">بيانات الشركاء والتوثيق تُضاف بعد التحقق من المستندات وموافقة أصحاب الأنشطة.</p>
+    </footer>
+
+    <!-- زر واتساب عائم للمساعدة السريعة -->
+    <a href="https://wa.me/201113308479?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%AD%D8%AA%D8%A7%D8%AC%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D8%B3%D8%B1%D9%8A%D8%B9%D8%A9%20%D9%85%D9%86%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B4%D8%A7%D8%B1%D8%B9%20%D9%88%D9%86%D8%A7%D8%AF%D9%8A%20%D8%A7%D9%84%D9%83%D9%88%D9%85%20%D8%A7%D9%84%D8%A3%D8%AE%D8%B6%D8%B1" 
+       target="_blank" 
+       aria-label="مساعدة سريعة عبر واتساب"
+       class="fixed bottom-4 left-4 z-40 bg-whatsapp hover:bg-whatsappDark text-white px-4 py-3 rounded-full shadow-xl shadow-emerald-600/30 flex items-center gap-2 font-extrabold text-xs transition active:scale-95">
+        <i data-lucide="message-circle" class="w-5 h-5"></i>
+        <span>مساعدة فورية</span>
+    </a>
+
+    <!-- نافذة (Modal) طلب الخدمة أو تسجيل المحل المنبثقة -->
+    <div id="orderModal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl modal-animate relative max-h-[92vh] overflow-y-auto">
+            
+            <!-- زر الإغلاق -->
+            <button onclick="closeOrderModal()" aria-label="إغلاق" class="absolute top-5 left-5 w-9 h-9 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center hover:bg-stone-200 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- رأس النافذة -->
+            <div class="flex items-center gap-3.5 mb-4 pl-8">
+                <div id="modalIconBox" class="w-13 h-13 rounded-2xl bg-amber-100 text-terracotta flex items-center justify-center shrink-0 p-3">
+                    <i id="modalIcon" data-lucide="sparkles" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <span id="modalBadge" class="inline-block text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-stone-100 text-deepTeal mb-1">القسم</span>
+                    <h3 id="modalTitle" class="text-lg font-extrabold text-stone-900 leading-tight">اسم الخدمة</h3>
+                </div>
+            </div>
+
+            <!-- رسالة تنبيه عند وجود خطأ -->
+            <div id="formAlert" class="hidden mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                <span id="formAlertText">يرجى إكمال البيانات المطلوبة.</span>
+            </div>
+
+            <!-- نموذج الطلب / التسجيل -->
+            <form id="orderForm" onsubmit="handleOrderSubmit(event)" class="space-y-3.5">
+                
+                <!-- قسم نظام الاعتماد والتوثيق (يظهر فقط عند تسجيل محل أو صنايعي جديد) -->
+                <div id="registrationFieldsBox" class="hidden space-y-3">
+                    <!-- مربع توضيحي بارز لنظام الاشتراك الاستثماري -->
+                    <div class="p-3.5 rounded-2xl bg-gradient-to-bl from-deepTeal to-deepTealLight text-white shadow-sm">
+                        <div class="flex items-center gap-1.5 text-amber-300 font-extrabold text-xs mb-2">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            <span>نظام الاعتماد والتخصيص للمشتركين:</span>
+                        </div>
+                        <div class="space-y-2 text-[11px] leading-relaxed">
+                            <div class="flex items-start gap-2 bg-white/10 p-2 rounded-xl">
+                                <span class="px-1.5 py-0.5 rounded bg-amber-400 text-deepTeal font-extrabold shrink-0">المرحلة 1</span>
+                                <span>اعتماد وتجربة لمدة <strong>14 يوماً</strong> على الموقع العام لاستقبال طلبات الجيران.</span>
+                            </div>
+                            <div class="flex items-start gap-2 bg-white/10 p-2 rounded-xl">
+                                <span class="px-1.5 py-0.5 rounded bg-emerald-400 text-deepTeal font-extrabold shrink-0">المرحلة 2</span>
+                                <span>تخصيص صفحة مستقلة + منيو خاص + باركود مطبوع عند دفع <strong>عربون جدية 500 جنيه</strong>.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- اختيار خطة البدء -->
+                    <div class="p-3 rounded-2xl bg-amber-50/90 border border-amber-200 space-y-2">
+                        <label class="block text-xs font-extrabold text-stone-800">اختر مرحلة البدء المطلوبة:</label>
+                        <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer">
+                            <input type="radio" name="planStage" value="اعتماد وتجربة 14 يوماً على الموقع العام" checked class="mt-0.5 accent-deepTeal">
+                            <div>
+                                <p class="text-xs font-extrabold text-deepTeal">البدء بفترة الاعتماد (14 يوم)</p>
+                                <p class="text-[11px] text-stone-500">تجربة الظهور واستقبال الطلبات على الموقع العام</p>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer">
+                            <input type="radio" name="planStage" value="تخصيص صفحة مستقلة + منيو + باركود مطبوع (عربون جدية 500 جنيه)" class="mt-0.5 accent-deepTeal">
+                            <div>
+                                <p class="text-xs font-extrabold text-amber-800">حجز التخصيص المستقل فوراً (عربون 500 ج) ★</p>
+                                <p class="text-[11px] text-stone-500">صفحة مستقلة + شيت منيو خاص + ستيكر باركود مطبوع للمحل</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- اختيار نوع التوثيق (سجل تجاري / بطاقة شخصية) -->
+                    <div class="p-3 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+                        <label class="block text-xs font-extrabold text-stone-800">نوع التوثيق (السجل التجاري ليس عائقاً):</label>
+                        <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer">
+                            <input type="radio" name="docType" value="سجل تجاري (موثق رسمياً ✓)" checked class="mt-0.5 accent-deepTeal">
+                            <div>
+                                <p class="text-xs font-extrabold text-emerald-800">لدي سجل تجاري / رخصة محل</p>
+                                <p class="text-[11px] text-stone-500">يحصل نشاطك على شارة <strong>"موثق رسمياً ✓"</strong></p>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer">
+                            <input type="radio" name="docType" value="بطاقة شخصية وعنوان فعلي (معتمد في الشارع ★)" class="mt-0.5 accent-deepTeal">
+                            <div>
+                                <p class="text-xs font-extrabold text-amber-800">ورشة / حرفي / مشروع منزلي (بدون سجل تجاري)</p>
+                                <p class="text-[11px] text-stone-500">تسجيل بالبطاقة الشخصية للحصول على شارة <strong>"معتمد في الشارع ★"</strong></p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="custName" class="block text-xs font-extrabold text-stone-700 mb-1">الاسم الكريم *</label>
+                    <input type="text" id="custName" placeholder="اكتب اسمك هنا..." 
+                           class="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-terracotta focus:bg-white transition">
+                </div>
+
+                <div>
+                    <label id="addressLabel" for="custAddress" class="block text-xs font-extrabold text-stone-700 mb-1">العنوان (الشارع / محيط نادي الكوم الأخضر / العمارة) *</label>
+                    <input type="text" id="custAddress" placeholder="مثال: بجوار نادي الكوم الأخضر - شارع المحطة - عمارة 8" 
+                           class="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-terracotta focus:bg-white transition">
+                </div>
+
+                <div>
+                    <label for="custPhone" class="block text-xs font-extrabold text-stone-700 mb-1">رقم الموبايل / الواتساب *</label>
+                    <input type="tel" id="custPhone" dir="ltr" required inputmode="numeric" autocomplete="tel" maxlength="11" pattern="01[0125][0-9]{8}" title="أدخل رقم موبايل مصري صحيح مكوّن من 11 رقمًا" placeholder="01xxxxxxxxx" 
+                           class="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-semibold text-right focus:outline-none focus:ring-2 focus:ring-terracotta focus:bg-white transition">
+                </div>
+
+                <div>
+                    <label id="detailsLabel" for="custDetails" class="block text-xs font-extrabold text-stone-700 mb-1">تفاصيل الطلب *</label>
+                    <textarea id="custDetails" rows="3" placeholder="اكتب تفاصيل طلبك هنا..." 
+                              class="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-terracotta focus:bg-white transition resize-none"></textarea>
+                </div>
+
+                <!-- خانة الموافقة الإلزامية على نظام الـ 14 يوم وعربون 500 جنيه عند التسجيل -->
+                <div id="termsAgreeBox" class="hidden">
+                    <label class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer">
+                        <input type="checkbox" id="agreePlanCheckbox" class="mt-0.5 w-4 h-4 accent-deepTeal rounded">
+                        <span class="text-[11px] font-bold text-stone-700 leading-relaxed">
+                            أوافق على نظام الاعتماد التجريبي لمدة <strong>14 يوماً</strong> على الموقع العام، وتخصيص صفحة مستقلة ومنيو خاص وباركود مطبوع عند سداد <strong>عربون جدية 500 جنيه</strong>.
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" id="modalSubmitBtn"
+                        class="w-full py-3.5 px-5 rounded-2xl bg-whatsapp hover:bg-whatsappDark active:scale-98 text-white font-extrabold text-base shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2.5 transition cursor-pointer mt-2">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                    <span id="modalSubmitText">إرسال الطلب عبر واتساب</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة عرض المنيو والأسعار لكل محل -->
+    <div id="menuModal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl modal-animate relative max-h-[90vh] flex flex-col">
+            <button onclick="closeMenuModal()" aria-label="إغلاق" class="absolute top-5 left-5 w-9 h-9 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center hover:bg-stone-200 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4 pl-8 shrink-0">
+                <div id="menuModalIconBox" class="w-12 h-12 rounded-2xl bg-amber-100 text-terracotta flex items-center justify-center shrink-0">
+                    <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <span class="inline-block text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-stone-100 text-deepTeal mb-0.5">قائمة الأسعار والخدمات</span>
+                    <h3 id="menuModalTitle" class="text-lg font-extrabold text-stone-900 leading-tight">منيو المحل</h3>
+                </div>
+            </div>
+
+            <p class="text-xs text-stone-500 mb-3 shrink-0">الأسعار المعروضة تجريبية وقد تتغير. أكد السعر والتوافر مع مقدم الخدمة قبل الطلب.</p>
+
+            <!-- قائمة الأصناف القابلة للتحديد -->
+            <div id="menuItemsList" class="space-y-2.5 overflow-y-auto flex-grow pr-0.5 pb-2">
+                <!-- يتم توليد الأصناف عبر الجافاسكريبت -->
+            </div>
+
+            <div class="pt-3 border-t border-stone-100 mt-3 shrink-0 flex items-center gap-2.5">
+                <button onclick="proceedWithSelectedMenuItems()" class="flex-grow py-3.5 px-4 rounded-2xl bg-deepTeal hover:bg-deepTealLight text-white font-extrabold text-sm shadow-md flex items-center justify-center gap-2 transition active:scale-98">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-amber-300"></i>
+                    <span id="menuProceedBtnText">اطلب المحدد الآن</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // رقم الواتساب المعتمد لاستقبال الطلبات والتسجيلات
+        const WHATSAPP_NUMBER = '201113308479';
+
+        // مصفوفة الخدمات العشرة الشاملة مع شارات التوثيق وحالة التخصيص الاستثماري
+        const servicesData = [
+            {
+                id: 'print-gov',
+                title: 'المطبعة والخدمات التجارية والحكومية',
+                badge: 'شريك الطباعة الرسمي',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'home-daily',
+                icon: 'printer',
+                colorClass: 'bg-cyan-100 text-cyan-800',
+                badgeClass: 'bg-cyan-50 text-cyan-800',
+                description: 'طباعة ملصقات الباركود للمحلات، كروت شخصية، تصوير مستندات، وخدمات حكومية ودفع فوري.',
+                placeholder: 'مثال: طباعة بوستر باركود للمحل، 100 كارت شخصي، أو تصوير مستندات ودفع فواتير...',
+                defaultMenu: [
+                    { name: 'باقة باركود مطبوع للمحلات (مقاوم للمياه)', price: 'مشمولة بعربون التخصيص', details: 'ستيكر خارجي + بوستر داخلي باسم المحل' },
+                    { name: 'طباعة 100 كارت شخصي فاخر', price: '95 ج', details: 'تصميم وطباعة سريعة لأصحاب المحلات والحرف' },
+                    { name: 'طباعة ورق أبيض وأسود / ألوان', price: '2 / 5 ج', details: 'ابعت الملف واتساب واستلمه مطبوع' },
+                    { name: 'دفع فواتير وخدمات حكومية فورية', price: 'عمولة رمزية', details: 'كهرباء، نت، شحن، واستخراج أوراق' }
+                ]
+            },
+            {
+                id: 'restaurant-pizza',
+                title: 'مطعم ومحل بيتزا',
+                badge: 'مطاعم ومأكولات سريعة',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'food-health',
+                icon: 'pizza',
+                colorClass: 'bg-orange-100 text-orange-700',
+                badgeClass: 'bg-orange-50 text-orange-700',
+                description: 'بيتزا، وجبات سريعة، مشويات، وتوصيل سخن للباب ومحيط نادي الكوم الأخضر.',
+                placeholder: 'مثال: 1 بيتزا مارجريتا وسط، 1 بيتزا فراخ كرانشي، و2 بيبسي...',
+                defaultMenu: [
+                    { name: 'بيتزا مارجريتا (وسط / كبير)', price: '95 / 130 ج', details: 'صوص طماطم، موتزاريلا، زعتر' },
+                    { name: 'بيتزا فراخ كرانشي', price: '135 / 175 ج', details: 'قطع دجاج مقرمش، فلفل، زيتون' },
+                    { name: 'كريب شاورما فراخ', price: '75 ج', details: 'مع بطاطس وثومية ومخلل' },
+                    { name: 'وجبة نص فرخة مشوية', price: '160 ج', details: 'مع أرز بسمتي وسلطات وعيش' }
+                ]
+            },
+            {
+                id: 'pharmacy',
+                title: 'صيدلية المنطقة',
+                badge: 'خدمات طبية وأدوية',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'food-health',
+                icon: 'pill',
+                colorClass: 'bg-emerald-100 text-emerald-700',
+                badgeClass: 'bg-emerald-50 text-emerald-700',
+                description: 'أدوية، مستلزمات طبية، وقياس ضغط وسكر وتوصيل فوري للعمارات والنادي.',
+                placeholder: 'مثال: علبة بنادول إكسترا، شريط فيتامين سي، أو طلب قياس ضغط بالمنزل...',
+                defaultMenu: [
+                    { name: 'قياس ضغط وسكر بالمنزل', price: '25 ج', details: 'زيارة سريعة للعمارة' },
+                    { name: 'حقيبة إسعافات أولية', price: '150 ج', details: 'شاش، مطهر، بلاستر، قطن' },
+                    { name: 'توصيل روشتة أدوية', price: 'مجاني للشارع', details: 'صرف فوري وتوصيل للباب' }
+                ]
+            },
+            {
+                id: 'aluminum-glass',
+                title: 'ألومنيوم وزجاج خام وسيكوريت',
+                badge: 'أعمال الألومنيوم والزجاج',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'crafts-auto',
+                icon: 'layers',
+                colorClass: 'bg-sky-100 text-sky-700',
+                badgeClass: 'bg-sky-50 text-sky-700',
+                description: 'مطابخ ألومنيوم، شبابيك بي إس، زجاج سيكوريت، مرايات ليد، وصيانة فورية.',
+                placeholder: 'مثال: مقايسة شباك ألومنيوم بي إس، تركيب مراية ليد، أو تصليح مفصلة مطبخ...',
+                defaultMenu: [
+                    { name: 'متر شباك ألومنيوم PS', price: 'حسب المقاس', details: 'قطاعات ثقيلة وزجاج دبل عازل' },
+                    { name: 'مراية ليد تاتش ديكور', price: 'تبدأ من 450 ج', details: 'إضاءة ورم أو أبيض حسب الطلب' },
+                    { name: 'متر زجاج سيكوريت 10 مم', price: 'حسب المقاس', details: 'واجهات محلات وكبائن شاور' },
+                    { name: 'صيانة وتغيير عجل ومفصلات', price: 'معاينة فورية', details: 'إصلاح شبابيك ومطابخ بالمنزل' }
+                ]
+            },
+            {
+                id: 'supermarket',
+                title: 'سوبر ماركت',
+                badge: 'طلبات البيت والبقالة',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'home-daily',
+                icon: 'shopping-cart',
+                colorClass: 'bg-teal-100 text-teal-700',
+                badgeClass: 'bg-teal-50 text-teal-700',
+                description: 'خضار، فاكهة، بقالة، ومنتجات ألبان وتوصيل سريع للعمارة.',
+                placeholder: 'مثال: 2 كيلو طماطم، 1 كيلو خيار، علبة جبنة، لتر لبن، وعيش...',
+                defaultMenu: [
+                    { name: 'كرتونة بيض أحمر / أبيض', price: 'سعر اليوم', details: 'طازج يومياً' },
+                    { name: 'لتر لبن طبيعي / معلب', price: '38 ج', details: 'كامل الدسم' },
+                    { name: 'شنطة خضار البيت اليومية', price: '100 ج', details: 'طماطم، بطاطس، خيار، بصل' },
+                    { name: 'طلبات بقالة وعطارة', price: 'حسب الطلب', details: 'توصيل مجاني لباب الشقة' }
+                ]
+            },
+            {
+                id: 'laundry',
+                title: 'مغسلة وتنظيف ملابس',
+                badge: 'مغسلة ومكواه',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'home-daily',
+                icon: 'shirt',
+                colorClass: 'bg-indigo-100 text-indigo-700',
+                badgeClass: 'bg-indigo-50 text-indigo-700',
+                description: 'غسيل، كي بالبخار، وتنظيف سجاد وبطاطين مع الاستلام والتسليم.',
+                placeholder: 'مثال: استلام 4 قمصان وبنطلون للمكواة، أو غسيل بطانية كبيرة...',
+                defaultMenu: [
+                    { name: 'مكواة بخار (قميص / بنطلون)', price: '15 ج', details: 'استلام وتسليم من الباب' },
+                    { name: 'غسيل ومكواة بدلة كاملة', price: '85 ج', details: 'تنظيف جاف وحفظ في كيس' },
+                    { name: 'غسيل بطانية كبيرة', price: '110 ج', details: 'تعطير وتجفيف كامل' },
+                    { name: 'متر غسيل سجاد', price: '25 ج', details: 'إزالة البقع وتغليف' }
+                ]
+            },
+            {
+                id: 'barber',
+                title: 'صالون حلاقة',
+                badge: 'حلاق رجالي وأطفال',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'home-daily',
+                icon: 'scissors',
+                colorClass: 'bg-amber-100 text-amber-800',
+                badgeClass: 'bg-amber-50 text-amber-800',
+                description: 'حلاقة شعر ودقن، تجهيز عرسان، وحجز دورك أو طلب حلاقة منزلية.',
+                placeholder: 'مثال: حجز موعد حلاقة شعر ودقن الساعة 8 مساءً، أو طلب حلاقة منزلية...',
+                defaultMenu: [
+                    { name: 'حلاقة شعر + دقن + استشوار', price: '80 ج', details: 'حجز دورك بدون انتظار' },
+                    { name: 'حلاقة أطفال', price: '50 ج', details: 'قصات حديثة وعناية' },
+                    { name: 'تنظيف بشرة بالبخار والماسك', price: '70 ج', details: 'إزالة الرؤوس السوداء' },
+                    { name: 'خدمة حلاقة منزلية', price: '150 ج', details: 'زيارة خاصة للمنزل' }
+                ]
+            },
+            {
+                id: 'peeled-potatoes',
+                title: 'محل بطاطس مقشرة',
+                badge: 'تجهيزات مطاعم وبيوت',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'food-health',
+                icon: 'utensils',
+                colorClass: 'bg-yellow-100 text-yellow-800',
+                badgeClass: 'bg-yellow-50 text-yellow-800',
+                description: 'بطاطس مقشرة وجاهزة للقلي، تفريزات، وتوريد للمطاعم والبيوت.',
+                placeholder: 'مثال: 5 كيلو بطاطس صوابع جاهزة للقلي، أو توريد يومي للمطعم...',
+                defaultMenu: [
+                    { name: 'كيلو بطاطس صوابع جاهزة للقلي', price: '30 ج', details: 'مقشرة ومغسولة وجاهزة للزيت' },
+                    { name: 'شيكارة 5 كيلو للمطاعم والبيوت', price: '140 ج', details: 'بطاطس تحمير مقرمشة' },
+                    { name: 'بطاطس شيبسي طازجة (كيلو)', price: '35 ج', details: 'تقطيع رفيع جاهز للقلي' }
+                ]
+            },
+            {
+                id: 'craftsmen',
+                title: 'محلات حرفية وصيانة منزلية',
+                badge: 'سباكة، كهرباء، نجارة، نقاشة',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'crafts-auto',
+                icon: 'wrench',
+                colorClass: 'bg-rose-100 text-rose-700',
+                badgeClass: 'bg-rose-50 text-rose-700',
+                description: 'صنايعية المنطقة المعتمدين لأي صيانة أو تشطيبات فورية.',
+                placeholder: 'مثال: سباك لتغيير خلاط مياه، كهربائي لفحص لوحة المفاتيح، أو نجار...',
+                defaultMenu: [
+                    { name: 'زيارة سباك صيانة فورية', price: 'تبدأ من 80 ج', details: 'تغيير خلاطات، سيفونات، تسريبات' },
+                    { name: 'زيارة كهربائي منازل', price: 'تبدأ من 80 ج', details: 'مفاتيح، لمبات، صيانة لوحة' },
+                    { name: 'نجار تركيب كوالين وأبواب', price: 'تبدأ من 100 ج', details: 'إصلاح أخشاب ومفصلات' }
+                ]
+            },
+            {
+                id: 'auto-tech',
+                title: 'تقنية وخدمات السيارات',
+                badge: 'ميكانيكا، كهرباء سيارات، كاوتش',
+                verificationBadge: 'بيانات تجريبية - غير موثق',
+                allocationStatus: 'بيانات تجريبية',
+                isDedicated: false,
+                category: 'crafts-auto',
+                icon: 'car',
+                colorClass: 'bg-slate-200 text-slate-800',
+                badgeClass: 'bg-slate-100 text-slate-700',
+                description: 'صيانة سيارات، تغيير زيت، شحن بطاريات، وخدمات طوارئ الطريق.',
+                placeholder: 'مثال: شحن بطارية سيارة أمام العمارة، لحام كاوتش، أو تغيير زيت...',
+                defaultMenu: [
+                    { name: 'وصلة شحن بطارية طوارئ بالشارع', price: '60 ج', details: 'وصول سريع أمام العمارة' },
+                    { name: 'تغيير زيت وفلاتر', price: 'حسب نوع الزيت', details: 'فحص سوائل السيارة مجاناً' },
+                    { name: 'كشف أعطال كمبيوتر للسيارة', price: '150 ج', details: 'تقرير شامل لحساسات الموتور' }
+                ]
+            }
+        ];
+
+        let activeCategory = 'all';
+        let currentModalMode = 'order'; // 'order' أو 'register'
+        let selectedService = null;
+        let currentMenuService = null;
+
+        // جلب المنيو الخاص بكل محل من التخزين المحلي، أو استخدام المنيو الافتراضي.
+        function getServiceMenu(serviceId) {
+            const savedMenus = readCustomMenus();
+            if (savedMenus[serviceId] && savedMenus[serviceId].length > 0) {
+                return savedMenus[serviceId];
+            }
+            const service = servicesData.find(s => s.id === serviceId);
+            return service ? service.defaultMenu : [];
+        }
+
+        // عرض البطاقات في الشبكة مع شارات التوثيق وحالة التخصيص الاستثماري
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            const emptyState = document.getElementById('emptyState');
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            document.getElementById('clearSearchBtn').classList.toggle('hidden', query.length === 0);
+
+            const filtered = servicesData.filter(item => {
+                const matchesCat = activeCategory === 'all' || item.category === activeCategory;
+                const matchesQuery = !query || 
+                    item.title.toLowerCase().includes(query) || 
+                    item.badge.toLowerCase().includes(query) || 
+                    item.description.toLowerCase().includes(query) ||
+                    item.verificationBadge.toLowerCase().includes(query);
+                return matchesCat && matchesQuery;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            const savedMenus = readCustomMenus();
+
+            grid.innerHTML = filtered.map(service => {
+                const hasCustomSheet = Boolean(savedMenus[service.id] && savedMenus[service.id].length > 0);
+                
+                // شارة حالة التخصيص الاستثماري (مخصص ★ أو فترة اعتماد 14 يوم)
+                const allocationBadgeHtml = service.isDedicated
+                    ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300/70">${escapeHTML(service.allocationStatus)}</span>`
+                    : `<span class="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200/70">${escapeHTML(service.allocationStatus)}</span>`;
+
+                // شارة التوثيق (موثق بسجل تجاري ✓ أو معتمد بالبطاقة ★)
+                const isCommercialReg = service.verificationBadge.includes('سجل تجاري');
+                const verificationBadgeHtml = isCommercialReg
+                    ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800">${escapeHTML(service.verificationBadge)}</span>`
+                    : `<span class="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700">${escapeHTML(service.verificationBadge)}</span>`;
+
+                return `
+                <div class="service-card bg-white p-4 rounded-2xl shadow-xs border ${service.isDedicated ? 'border-amber-300/70' : 'border-stone-200/70'} hover:shadow-md hover:border-terracotta/50 transition">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-14 h-14 rounded-2xl ${service.colorClass} flex items-center justify-center shrink-0">
+                            <i data-lucide="${escapeHTML(service.icon)}" class="w-7 h-7"></i>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex items-center gap-1.5 flex-wrap mb-1.5">
+                                <span class="inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-md ${service.badgeClass}">
+                                    ${escapeHTML(service.badge)}
+                                </span>
+                                ${allocationBadgeHtml}
+                                ${verificationBadgeHtml}
+                                ${hasCustomSheet ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700">منيو محدّث</span>` : ''}
+                            </div>
+                            <h3 class="text-base font-extrabold text-stone-900 truncate">${escapeHTML(service.title)}</h3>
+                            <p class="text-xs text-stone-500 mt-0.5 line-clamp-2 leading-relaxed">
+                                ${escapeHTML(service.description)}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- أزرار الإجراءات السريعة داخل البطاقة -->
+                    <div class="grid grid-cols-2 gap-2 mt-3.5 pt-3 border-t border-stone-100">
+                        <button onclick="openMenuModal('${escapeHTML(service.id)}')" 
+                                class="py-2.5 px-3 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-800 font-extrabold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
+                            <i data-lucide="clipboard-list" class="w-4 h-4 text-terracotta"></i>
+                            <span>المنيو والأسعار</span>
+                        </button>
+                        <button onclick="openServiceModal('${escapeHTML(service.id)}')" 
+                                class="py-2.5 px-3 rounded-xl bg-deepTeal hover:bg-deepTealLight text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-xs transition active:scale-95">
+                            <i data-lucide="send" class="w-3.5 h-3.5 text-amber-300"></i>
+                            <span>اطلب الآن</span>
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
+
+            lucide.createIcons();
+        }
+
+        // تغيير التصنيف النشط
+        function setCategory(cat, btnElement) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-deepTeal', 'text-white', 'shadow-sm', 'font-extrabold');
+                btn.classList.add('bg-white', 'text-stone-600', 'border', 'border-stone-200', 'font-bold');
+            });
+            btnElement.classList.remove('bg-white', 'text-stone-600', 'border', 'border-stone-200', 'font-bold');
+            btnElement.classList.add('bg-deepTeal', 'text-white', 'shadow-sm', 'font-extrabold');
+            renderServices();
+        }
+
+        function filterServices() {
+            renderServices();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            renderServices();
+        }
+
+        // فتح نافذة عرض المنيو والأسعار
+        function openMenuModal(serviceId) {
+            currentMenuService = servicesData.find(s => s.id === serviceId);
+            if (!currentMenuService) return;
+
+            document.getElementById('menuModalTitle').textContent = currentMenuService.title;
+            const iconBox = document.getElementById('menuModalIconBox');
+            iconBox.className = `w-12 h-12 rounded-2xl ${currentMenuService.colorClass} flex items-center justify-center shrink-0`;
+            iconBox.innerHTML = `<i data-lucide="${currentMenuService.icon}" class="w-6 h-6"></i>`;
+
+            const items = getServiceMenu(serviceId);
+            const listEl = document.getElementById('menuItemsList');
+
+            listEl.innerHTML = items.map(item => `
+                <label class="flex items-start gap-3 p-3 rounded-2xl border border-stone-200/80 bg-stone-50/60 hover:bg-amber-50/40 cursor-pointer transition">
+                    <input type="checkbox" value="${escapeHTML(item.name)} (${escapeHTML(item.price)})" onchange="updateMenuSelectionCount()" class="menu-item-chk mt-1 w-4 h-4 accent-deepTeal rounded">
+                    <div class="flex-grow min-w-0">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-sm font-extrabold text-stone-900">${escapeHTML(item.name)}</span>
+                            <span class="text-xs font-extrabold text-terracottaDark bg-amber-100/80 px-2 py-0.5 rounded-lg shrink-0">${escapeHTML(item.price)}</span>
+                        </div>
+                        ${item.details ? `<p class="text-[11px] text-stone-500 mt-0.5">${escapeHTML(item.details)}</p>` : ''}
+                    </div>
+                </label>
+            `).join('');
+
+            updateMenuSelectionCount();
+            lucide.createIcons();
+            document.getElementById('menuModal').classList.remove('hidden');
+        }
+
+        function closeMenuModal() {
+            document.getElementById('menuModal').classList.add('hidden');
+        }
+
+        function updateMenuSelectionCount() {
+            const checkedCount = document.querySelectorAll('.menu-item-chk:checked').length;
+            const btnText = document.getElementById('menuProceedBtnText');
+            btnText.textContent = checkedCount > 0 ? `اطلب المحدد (${checkedCount})` : 'اطلب من هذا المحل الآن';
+        }
+
+        function proceedWithSelectedMenuItems() {
+            const selected = Array.from(document.querySelectorAll('.menu-item-chk:checked')).map(cb => `- ${cb.value}`);
+            const serviceId = currentMenuService.id;
+            closeMenuModal();
+            openServiceModal(serviceId);
+            if (selected.length > 0) {
+                document.getElementById('custDetails').value = `الأصناف المطلوبة من المنيو:\n${selected.join('\n')}`;
+            }
+        }
+
+        // فتح نافذة طلب خدمة محددة
+        function openServiceModal(serviceId) {
+            currentModalMode = 'order';
+            selectedService = servicesData.find(s => s.id === serviceId);
+            if (!selectedService) return;
+
+            document.getElementById('registrationFieldsBox').classList.add('hidden');
+            document.getElementById('termsAgreeBox').classList.add('hidden');
+            document.getElementById('modalBadge').textContent = `${selectedService.badge} • ${selectedService.allocationStatus}`;
+            document.getElementById('modalTitle').textContent = selectedService.title;
+            document.getElementById('addressLabel').textContent = 'العنوان (الشارع / محيط نادي الكوم الأخضر / العمارة) *';
+            document.getElementById('detailsLabel').textContent = 'تفاصيل طلبك *';
+            document.getElementById('custDetails').placeholder = selectedService.placeholder;
+            document.getElementById('modalSubmitText').textContent = 'إرسال الطلب عبر واتساب';
+
+            const iconBox = document.getElementById('modalIconBox');
+            iconBox.className = `w-13 h-13 rounded-2xl ${selectedService.colorClass} flex items-center justify-center shrink-0 p-3`;
+            iconBox.innerHTML = `<i data-lucide="${selectedService.icon}" class="w-7 h-7"></i>`;
+
+            loadSavedCustomerData();
+            showModal();
+        }
+
+        // فتح نافذة تسجيل محل أو حرفة جديدة في الدليل بنظام الـ 14 يوم وعربون 500 جنيه
+        function openShopRegistrationModal() {
+            currentModalMode = 'register';
+            selectedService = null;
+
+            document.getElementById('registrationFieldsBox').classList.remove('hidden');
+            document.getElementById('termsAgreeBox').classList.remove('hidden');
+            document.getElementById('agreePlanCheckbox').checked = true;
+            document.getElementById('modalBadge').textContent = 'اعتماد 14 يوم / تخصيص بعربون 500 ج';
+            document.getElementById('modalTitle').textContent = 'سجل محلك أو حرفتك في الشارع والنادي';
+            document.getElementById('addressLabel').textContent = 'موقع المحل / الورشة (الشارع أو محيط الكوم الأخضر) *';
+            document.getElementById('detailsLabel').textContent = 'اسم المحل / التخصص والخدمات التي تقدمها *';
+            document.getElementById('custDetails').placeholder = 'مثال: ورشة الأمل للألومنيوم والزجاج السيكوريت - خبرة 15 سنة...';
+            document.getElementById('modalSubmitText').textContent = 'إرسال طلب الانضمام والموافقة عبر واتساب';
+
+            const iconBox = document.getElementById('modalIconBox');
+            iconBox.className = 'w-13 h-13 rounded-2xl bg-amber-100 text-terracotta flex items-center justify-center shrink-0 p-3';
+            iconBox.innerHTML = `<i data-lucide="store" class="w-7 h-7"></i>`;
+
+            loadSavedCustomerData();
+            showModal();
+        }
+
+        function loadSavedCustomerData() {
+            document.getElementById('formAlert').classList.add('hidden');
+            document.getElementById('custName').value = localStorage.getItem('street_cust_name') || '';
+            document.getElementById('custAddress').value = localStorage.getItem('street_cust_address') || '';
+            document.getElementById('custPhone').value = localStorage.getItem('street_cust_phone') || '';
+            document.getElementById('custDetails').value = '';
+        }
+
+        function showModal() {
+            lucide.createIcons();
+            document.getElementById('orderModal').classList.remove('hidden');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.add('hidden');
+        }
+
+        // إرسال الطلب أو التسجيل عبر واتساب
+        function handleOrderSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('custName').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const details = document.getElementById('custDetails').value.trim();
+            const alertBox = document.getElementById('formAlert');
+            const alertText = document.getElementById('formAlertText');
+
+            if (!name || !address || !phone || !details) {
+                alertText.textContent = 'من فضلك اكتب الاسم ورقم الموبايل والعنوان والتفاصيل المطلوبة.';
+                alertBox.classList.remove('hidden');
+                return;
+            }
+
+            if (!/^01[0125][0-9]{8}$/.test(phone)) {
+                alertText.textContent = 'رقم الموبايل غير صحيح. أدخل رقمًا مصريًا مكوّنًا من 11 رقمًا ويبدأ بـ 010 أو 011 أو 012 أو 015.';
+                alertBox.classList.remove('hidden');
+                return;
+            }
+
+            if (currentModalMode === 'register' && !document.getElementById('agreePlanCheckbox').checked) {
+                alertText.textContent = 'يرجى تأكيد الموافقة على نظام الاعتماد 14 يوماً وعربون التخصيص 500 جنيه.';
+                alertBox.classList.remove('hidden');
+                return;
+            }
+
+            alertBox.classList.add('hidden');
+
+            try {
+                localStorage.setItem('street_cust_name', name);
+                localStorage.setItem('street_cust_address', address);
+                localStorage.setItem('street_cust_phone', phone);
+            } catch (error) {
+                console.warn('تعذر حفظ بيانات العميل على هذا الجهاز:', error);
+            }
+
+            let message = '';
+            if (currentModalMode === 'register') {
+                const planStage = document.querySelector('input[name="planStage"]:checked')?.value || 'اعتماد 14 يوماً على الموقع العام';
+                const docType = document.querySelector('input[name="docType"]:checked')?.value || 'بطاقة شخصية';
+                message = 
+`السلام عليكم، طلب *انضمام نشاط جديد* لمنصة خدمات الشارع ونادي الكوم الأخضر 🏪
+
+👤 *صاحب النشاط:* ${name}
+📍 *موقع المحل/الورشة:* ${address}
+${phone ? `📱 *رقم التواصل:* ${phone}\n` : ''}📋 *نوع التوثيق:* ${docType}
+💎 *مرحلة الاشتراك المختارة:* ${planStage}
+✅ *إقرار النظام:* موافق على الاعتماد 14 يوماً على الموقع العام والتخصيص بصفحة مستقلة ومنيو خاص وباركود مطبوع عند دفع عربون جدية 500 جنيه.
+🛠️ *تفاصيل النشاط والخدمات:*
+${details}`;
+            } else {
+                message = 
+`السلام عليكم، طلب جديد من *منصة خدمات الشارع ونادي الكوم الأخضر* 🏘️
+
+🔹 *الخدمة:* ${selectedService.title} (${selectedService.allocationStatus})
+👤 *الاسم:* ${name}
+🏢 *العنوان:* ${address}
+${phone ? `📱 *موبايل:* ${phone}\n` : ''}📝 *تفاصيل الطلب:*
+${details}
+
+في انتظار ردكم، وشكراً!`;
+            }
+
+            const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+            closeOrderModal();
+        }
+
+        // إغلاق النوافذ عند الضغط على الخلفية
+        ['orderModal', 'menuModal'].forEach(modalId => {
+            document.getElementById(modalId).addEventListener('click', function(e) {
+                if (e.target === this) this.classList.add('hidden');
+            });
+        });
+
+        // التشغيل المبدئي عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            renderServices();
+        });
+    </script>
+</body>
+</html>
