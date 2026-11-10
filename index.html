@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="دليل تجريبي للخدمات والمحلات والحرفيين في نطاق الشارع ومحيط نادي الكوم الأخضر.">
-    <meta name="theme-color" content="#1E3A3A">
-    <meta name="robots" content="index,follow">
-    <title>منصة خدمات الشارع ونادي الكوم الأخضر | النسخة التجريبية</title>
+    <title>منصة خدمات الشارع ونادي الكوم الأخضر | دليلك الشامل</title>
     <!-- تحميل Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- تحميل خط Cairo و Tajawal -->
@@ -15,6 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
     <!-- تحميل أيقونات Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- تحميل مكتبة توليد الباركود QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- قراءة وكتابة ملفات Excel بصيغة XLSX -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -65,6 +66,25 @@
     </style>
 </head>
 <body class="text-stone-800 antialiased min-h-screen flex flex-col justify-between pb-20">
+
+    <!-- بانر ترحيب تلقائي عند مسح صاحب المحل لباركود التفعيل -->
+    <div id="activationWelcomeBanner" class="hidden bg-emerald-800 text-white px-4 py-3.5 shadow-md relative z-50">
+        <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                    <i data-lucide="badge-check" class="w-5 h-5 text-amber-300"></i>
+                </div>
+                <div>
+                    <p id="activatedTierBadge" class="text-[11px] font-extrabold text-amber-200">تم تفعيل نشاطك التجاري بنجاح!</p>
+                    <p id="activatedShopTitle" class="text-sm font-bold">مرحباً بك في منصة خدمات الشارع ونادي الكوم الأخضر</p>
+                </div>
+            </div>
+            <button onclick="document.getElementById('activationWelcomeBanner').classList.add('hidden')" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- الهيدر العلوي بتدرج الألوان الدافئة -->
     <header class="bg-gradient-to-bl from-deepTeal via-deepTealLight to-deepTeal text-white rounded-b-3xl shadow-lg px-4 pt-7 pb-8 relative overflow-hidden">
         <div class="absolute -top-12 -left-12 w-44 h-44 bg-terracotta opacity-15 rounded-full blur-xl"></div>
@@ -76,12 +96,15 @@
                     <i data-lucide="map-pin" class="w-3.5 h-3.5 text-terracotta"></i>
                     <span>نطاق الشارع ومحيط نادي الكوم الأخضر</span>
                 </span>
-                <span class="text-[11px] text-stone-200 font-bold bg-black/25 px-2.5 py-1 rounded-lg shrink-0">10 أقسام تجريبية</span>
+                <span class="text-[11px] text-stone-200 font-bold bg-black/25 px-2.5 py-1 rounded-lg shrink-0">10 قطاعات خدمية</span>
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-1.5">منصة خدمات الشارع ونادي الكوم الأخضر</h1>
             <p class="text-stone-200 text-sm leading-relaxed mb-5">
-                دليل تجريبي لخدمات ومحلات وصنايعية المنطقة ومحيط نادي الكوم الأخضر. راجع بيانات النشاط والسعر والتوافر مع مقدم الخدمة قبل تأكيد أي طلب.
+                دليلك للوصول إلى المحلات والفنيين ومقدمي الخدمات في المنطقة ومحيط نادي الكوم الأخضر، والتواصل معهم بسهولة.
+            </p>
+            <p class="text-[11px] leading-relaxed text-amber-100 bg-black/20 border border-white/15 rounded-xl px-3 py-2 mb-4">
+                منصة ربط تجاري وخدمي مستقلة لخدمة الأهالي والأنشطة المحلية، ولا تمثل جهة حكومية أو سلطة محلية.
             </p>
 
             <!-- شريط البحث الفوري -->
@@ -155,8 +178,12 @@
 
     <!-- تذييل الصفحة -->
     <footer class="max-w-lg w-full mx-auto text-center py-6 px-4 text-stone-400 text-xs mt-4">
-        <p class="font-bold text-stone-700">منصة خدمات الشارع ونادي الكوم الأخضر</p>\n        <p class="mt-1 text-amber-700">نسخة تجريبية: بيانات الأنشطة والأسعار والتوثيق تحتاج مراجعة قبل الاعتماد.</p>
-        <p class="mt-1">بيانات الشركاء والتوثيق تُضاف بعد التحقق من المستندات وموافقة أصحاب الأنشطة.</p>
+        <p class="font-bold text-stone-700">منصة خدمات الشارع ونادي الكوم الأخضر</p>
+        <p class="mt-1">منصة ربط تجاري وخدمي مستقلة، وليست جهة حكومية أو جهة اعتماد أو تفتيش.</p>
+        <button onclick="openAdminModal()" class="mt-4 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-stone-200/80 hover:bg-stone-200 text-stone-800 font-extrabold text-xs transition shadow-2xs">
+            <i data-lucide="qr-code" class="w-4 h-4 text-deepTeal"></i>
+            <span>لوحة الإدارة: الباركود الخدمي وشيت المنيو</span>
+        </button>
     </footer>
 
     <!-- زر واتساب عائم للمساعدة السريعة -->
@@ -270,7 +297,7 @@
 
                 <div>
                     <label for="custPhone" class="block text-xs font-extrabold text-stone-700 mb-1">رقم الموبايل / الواتساب *</label>
-                    <input type="tel" id="custPhone" dir="ltr" required inputmode="numeric" autocomplete="tel" maxlength="11" pattern="01[0125][0-9]{8}" title="أدخل رقم موبايل مصري صحيح مكوّن من 11 رقمًا" placeholder="01xxxxxxxxx" 
+                    <input type="tel" id="custPhone" dir="ltr" placeholder="01xxxxxxxxx" 
                            class="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-semibold text-right focus:outline-none focus:ring-2 focus:ring-terracotta focus:bg-white transition">
                 </div>
 
@@ -283,7 +310,7 @@
                 <!-- خانة الموافقة الإلزامية على نظام الـ 14 يوم وعربون 500 جنيه عند التسجيل -->
                 <div id="termsAgreeBox" class="hidden">
                     <label class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer">
-                        <input type="checkbox" id="agreePlanCheckbox" class="mt-0.5 w-4 h-4 accent-deepTeal rounded">
+                        <input type="checkbox" id="agreePlanCheckbox" checked class="mt-0.5 w-4 h-4 accent-deepTeal rounded">
                         <span class="text-[11px] font-bold text-stone-700 leading-relaxed">
                             أوافق على نظام الاعتماد التجريبي لمدة <strong>14 يوماً</strong> على الموقع العام، وتخصيص صفحة مستقلة ومنيو خاص وباركود مطبوع عند سداد <strong>عربون جدية 500 جنيه</strong>.
                         </span>
@@ -316,7 +343,7 @@
                 </div>
             </div>
 
-            <p class="text-xs text-stone-500 mb-3 shrink-0">الأسعار المعروضة تجريبية وقد تتغير. أكد السعر والتوافر مع مقدم الخدمة قبل الطلب.</p>
+            <p class="text-xs text-stone-500 mb-3 shrink-0">اختر الأصناف التي تريدها وسيتم إضافتها لطلبك تلقائياً:</p>
 
             <!-- قائمة الأصناف القابلة للتحديد -->
             <div id="menuItemsList" class="space-y-2.5 overflow-y-auto flex-grow pr-0.5 pb-2">
@@ -331,6 +358,165 @@
             </div>
         </div>
     </div>
+
+    <!-- نافذة لوحة الإدارة: الباركود الخدمي للشارع، باركود التفعيل، وشيت الإكسل -->
+    <div id="adminModal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl modal-animate relative max-h-[92vh] overflow-y-auto">
+            <button onclick="closeAdminModal()" aria-label="إغلاق" class="absolute top-5 left-5 w-9 h-9 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center hover:bg-stone-200 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="mb-4 pl-8">
+                <span class="inline-block text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-amber-100 text-terracottaDark mb-1">إدارة المنصة والتفعيل والطباعة</span>
+                <h3 class="text-lg font-extrabold text-stone-900">الباركود الخدمي وشيت المنيو</h3>
+            </div>
+
+            <!-- أزرار التبويب الثلاثة -->
+            <div class="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-2xl mb-5">
+                <button id="tabBtnStreetQr" onclick="switchAdminTab('streetQr')" class="py-2.5 px-2 rounded-xl text-[11px] font-extrabold bg-white text-deepTeal shadow-xs transition flex items-center justify-center gap-1">
+                    <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+                    <span>باركود الشارع</span>
+                </button>
+                <button id="tabBtnShopQr" onclick="switchAdminTab('shopQr')" class="py-2.5 px-2 rounded-xl text-[11px] font-bold text-stone-600 transition flex items-center justify-center gap-1">
+                    <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+                    <span>تفعيل محل</span>
+                </button>
+                <button id="tabBtnExcel" onclick="switchAdminTab('excel')" class="py-2.5 px-2 rounded-xl text-[11px] font-bold text-stone-600 transition flex items-center justify-center gap-1">
+                    <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+                    <span>شيت المنيو</span>
+                </button>
+            </div>
+
+            <!-- التبويب الأول: الباركود الخدمي العام للشارع ونادي الكوم الأخضر -->
+            <div id="adminTabStreetQr" class="space-y-4">
+                <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 text-xs text-stone-800 leading-relaxed">
+                    <p class="font-extrabold text-deepTeal mb-1">الباركود الخدمي للشارع ومحيط نادي الكوم الأخضر:</p>
+                    <p>اطبع هذا الملصق في <strong>المطبعة المسجلة تجارياً</strong> وعلّقه على أبواب المحلات، مداخل العمارات، ومحيط النادي ليفتح المنصة كاملة لأي زائر يمسحه.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold text-stone-700 mb-1">نقطة تعليق الملصق (اختياري)</label>
+                    <input type="text" id="streetPointName" value="الشارع الرئيسي ومحيط نادي الكوم الأخضر" 
+                           class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-terracotta">
+                </div>
+
+                <button onclick="generateStreetServiceQR()" class="w-full py-3 px-4 rounded-2xl bg-deepTeal hover:bg-deepTealLight text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 transition">
+                    <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-300"></i>
+                    <span>تحديث ملصق الباركود الخدمي</span>
+                </button>
+
+                <!-- بطاقة الملصق الجاهزة للطباعة أو المشاركة -->
+                <div id="streetQrPoster" class="p-5 rounded-3xl bg-gradient-to-b from-deepTeal to-deepTealLight text-white text-center shadow-lg border-2 border-amber-400">
+                    <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-deepTeal text-[11px] font-extrabold mb-2">الباركود الخدمي الموحد</span>
+                    <h4 class="text-lg font-extrabold text-white">خدمات الشارع ونادي الكوم الأخضر</h4>
+                    <p id="streetPointDisplay" class="text-xs text-amber-200 font-bold mb-3">الشارع الرئيسي ومحيط نادي الكوم الأخضر</p>
+                    
+                    <div id="streetQrcodeContainer" class="bg-white p-3.5 rounded-2xl shadow-md inline-flex items-center justify-center mx-auto my-1"></div>
+                    
+                    <p class="text-xs text-stone-100 font-extrabold mt-3">امسح الكود بكاميرا موبايلك واطلب أي خدمة توصلك لباب البيت!</p>
+                    <p class="text-[10px] text-amber-200/90 mt-1">مطاعم • صيدلية • سوبر ماركت • مغسلة • مطبعة • صنايعية • سيارات</p>
+                    <p class="text-[10px] text-white/80 font-bold mt-2 pt-2 border-t border-white/15">منصة مستقلة لخدمة الأهالي والأنشطة المحلية | واتساب: 01113308479</p>
+                </div>
+            </div>
+
+            <!-- التبويب الثاني: مولّد باركود التفعيل الخاص بكل محل وحالة الاشتراك -->
+            <div id="adminTabShopQr" class="hidden space-y-3.5">
+                <div>
+                    <label class="block text-xs font-extrabold text-stone-700 mb-1">اختر التخصص / القسم</label>
+                    <select id="qrShopCategory" class="w-full px-3.5 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-terracotta">
+                        <!-- يتم تعبئتها تلقائياً -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold text-stone-700 mb-1">حالة التفعيل والاشتراك الاستثماري *</label>
+                    <select id="qrActivationTier" class="w-full px-3.5 py-3 rounded-xl bg-amber-50 border border-amber-300 text-stone-900 text-xs font-extrabold focus:outline-none focus:ring-2 focus:ring-terracotta">
+                        <option value="trial14">اعتماد تجريبي (14 يوم على الموقع العام)</option>
+                        <option value="dedicated500">تخصيص مستقل (تم سداد عربون 500 جنيه) ★</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold text-stone-700 mb-1">اسم المحل أو الصنايعي *</label>
+                    <input type="text" id="qrShopName" placeholder="مثال: بيتزا الأمل / صيدلية الشفاء" 
+                           class="w-full px-3.5 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-terracotta">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-extrabold text-stone-700 mb-1">نوع التوثيق</label>
+                        <select id="qrShopDoc" class="w-full px-3 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-terracotta">
+                            <option value="موثق بسجل تجاري ✓">سجل تجاري ✓</option>
+                            <option value="معتمد بالبطاقة ★">بطاقة شخصية ★</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold text-stone-700 mb-1">كود التفعيل / الموبايل</label>
+                        <input type="text" id="qrShopCode" placeholder="مثال: VIP-500" 
+                               class="w-full px-3 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-terracotta">
+                    </div>
+                </div>
+
+                <button onclick="generateActivationQR()" class="w-full py-3.5 px-4 rounded-2xl bg-deepTeal hover:bg-deepTealLight text-white font-extrabold text-sm shadow-md flex items-center justify-center gap-2 transition active:scale-98">
+                    <i data-lucide="qr-code" class="w-4 h-4 text-amber-300"></i>
+                    <span>توليد باركود التفعيل الخاص بالمحل</span>
+                </button>
+
+                <!-- بطاقة عرض الباركود الجاهزة للمشاركة -->
+                <div id="qrResultCard" class="hidden mt-4 p-5 rounded-3xl bg-gradient-to-b from-amber-50 to-white border-2 border-dashed border-terracotta text-center">
+                    <span id="qrDisplayTierBadge" class="inline-block px-3 py-1 rounded-full bg-deepTeal text-amber-200 text-[11px] font-extrabold mb-2">حالة الاشتراك</span>
+                    <h4 id="qrDisplayShopName" class="text-lg font-extrabold text-stone-900">اسم المحل</h4>
+                    <p id="qrDisplayCategory" class="text-xs text-stone-500 font-bold mb-3">التخصص</p>
+                    
+                    <div id="qrcodeContainer" class="bg-white p-3 rounded-2xl shadow-sm inline-flex items-center justify-center border border-stone-100 mx-auto my-1"></div>
+                    
+                    <p id="qrDisplayTierNote" class="text-[11px] text-stone-700 font-bold mt-2 leading-relaxed">امسح الباركود بكاميرا الموبايل لتفعيل اشتراكك في دليل الشارع ونادي الكوم الأخضر</p>
+                    <p id="qrDisplayCode" class="text-xs font-extrabold text-terracottaDark mt-1"></p>
+
+                    <button onclick="shareActivationWhatsApp()" class="mt-4 w-full py-3 px-4 rounded-xl bg-whatsapp hover:bg-whatsappDark text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition">
+                        <i data-lucide="share-2" class="w-4 h-4"></i>
+                        <span>إرسال التفعيل لصاحب المحل واتساب</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- التبويب الثالث: إدارة شيت Excel للمنيو والأسعار -->
+            <div id="adminTabExcel" class="hidden space-y-4">
+                <div class="p-3.5 rounded-2xl bg-sky-50 border border-sky-200/80 text-xs text-sky-900 leading-relaxed">
+                    <p class="font-extrabold mb-1">إدارة قوائم الأصناف والأسعار بملف Excel</p>
+                    <p>اختر القسم، ثم نزّل ملف Excel بصيغة XLSX، وعدّل الأصناف والأسعار، وبعدها ارفع الملف هنا. سيتم تحديث قائمة هذا القسم على هذا الجهاز.</p>
+                    <p class="mt-2 font-bold">تنبيه: الحفظ الحالي محلي على نفس المتصفح والجهاز، وليس قاعدة بيانات مشتركة بين أجهزة الإدارة.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold text-stone-700 mb-1">1. اختر القسم المراد تحديثه</label>
+                    <select id="excelShopCategory" onchange="updateExcelStatus()" class="w-full px-3.5 py-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-terracotta"></select>
+                    <p id="excelCurrentCount" class="text-[11px] text-emerald-700 font-bold mt-1.5"></p>
+                </div>
+
+                <div class="pt-1">
+                    <label class="block text-xs font-extrabold text-stone-700 mb-1.5">2. تنزيل ملف Excel قابل للتعديل</label>
+                    <button onclick="downloadExcelTemplate()" class="w-full py-3 px-4 rounded-xl bg-amber-100 hover:bg-amber-200/80 text-amber-900 font-extrabold text-xs flex items-center justify-center gap-2 transition">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                        <span>تنزيل نموذج Excel (.xlsx)</span>
+                    </button>
+                    <button onclick="downloadCsvTemplate()" class="w-full mt-2 py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs">تنزيل نسخة CSV بديلة</button>
+                </div>
+
+                <div class="pt-1">
+                    <label class="block text-xs font-extrabold text-stone-700 mb-1.5">3. رفع الملف بعد التعديل</label>
+                    <label class="w-full py-4 px-4 rounded-2xl border-2 border-dashed border-stone-300 hover:border-deepTeal bg-stone-50 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition">
+                        <i data-lucide="upload-cloud" class="w-6 h-6 text-deepTeal"></i>
+                        <span class="text-xs font-extrabold text-stone-800">اضغط لاختيار ملف Excel أو CSV</span>
+                        <span class="text-[10px] text-stone-500">الصيغ المدعومة: .xlsx و .xls و .csv</span>
+                        <input type="file" id="csvFileInput" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" onchange="handleCsvUpload(event)" class="hidden">
+                    </label>
+                </div>
+                <div id="excelUploadAlert" class="hidden p-3 rounded-xl text-xs font-bold flex items-center gap-2"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // رقم الواتساب المعتمد لاستقبال الطلبات والتسجيلات
         const WHATSAPP_NUMBER = '201113308479';
@@ -341,9 +527,9 @@
                 id: 'print-gov',
                 title: 'المطبعة والخدمات التجارية والحكومية',
                 badge: 'شريك الطباعة الرسمي',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
-                isDedicated: false,
+                verificationBadge: 'موثق بسجل تجاري ✓',
+                allocationStatus: 'مخصص ★',
+                isDedicated: true,
                 category: 'home-daily',
                 icon: 'printer',
                 colorClass: 'bg-cyan-100 text-cyan-800',
@@ -361,9 +547,9 @@
                 id: 'restaurant-pizza',
                 title: 'مطعم ومحل بيتزا',
                 badge: 'مطاعم ومأكولات سريعة',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
-                isDedicated: false,
+                verificationBadge: 'موثق بسجل تجاري ✓',
+                allocationStatus: 'مخصص ★',
+                isDedicated: true,
                 category: 'food-health',
                 icon: 'pizza',
                 colorClass: 'bg-orange-100 text-orange-700',
@@ -381,9 +567,9 @@
                 id: 'pharmacy',
                 title: 'صيدلية المنطقة',
                 badge: 'خدمات طبية وأدوية',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
-                isDedicated: false,
+                verificationBadge: 'موثق بسجل تجاري ✓',
+                allocationStatus: 'مخصص ★',
+                isDedicated: true,
                 category: 'food-health',
                 icon: 'pill',
                 colorClass: 'bg-emerald-100 text-emerald-700',
@@ -400,8 +586,8 @@
                 id: 'aluminum-glass',
                 title: 'ألومنيوم وزجاج خام وسيكوريت',
                 badge: 'أعمال الألومنيوم والزجاج',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
+                verificationBadge: 'معتمد بالبطاقة ★',
+                allocationStatus: 'فترة اعتماد 14 يوم',
                 isDedicated: false,
                 category: 'crafts-auto',
                 icon: 'layers',
@@ -420,9 +606,9 @@
                 id: 'supermarket',
                 title: 'سوبر ماركت',
                 badge: 'طلبات البيت والبقالة',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
-                isDedicated: false,
+                verificationBadge: 'موثق بسجل تجاري ✓',
+                allocationStatus: 'مخصص ★',
+                isDedicated: true,
                 category: 'home-daily',
                 icon: 'shopping-cart',
                 colorClass: 'bg-teal-100 text-teal-700',
@@ -440,8 +626,8 @@
                 id: 'laundry',
                 title: 'مغسلة وتنظيف ملابس',
                 badge: 'مغسلة ومكواه',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
+                verificationBadge: 'معتمد بالبطاقة ★',
+                allocationStatus: 'فترة اعتماد 14 يوم',
                 isDedicated: false,
                 category: 'home-daily',
                 icon: 'shirt',
@@ -460,8 +646,8 @@
                 id: 'barber',
                 title: 'صالون حلاقة',
                 badge: 'حلاق رجالي وأطفال',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
+                verificationBadge: 'معتمد بالبطاقة ★',
+                allocationStatus: 'فترة اعتماد 14 يوم',
                 isDedicated: false,
                 category: 'home-daily',
                 icon: 'scissors',
@@ -480,8 +666,8 @@
                 id: 'peeled-potatoes',
                 title: 'محل بطاطس مقشرة',
                 badge: 'تجهيزات مطاعم وبيوت',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
+                verificationBadge: 'معتمد بالبطاقة ★',
+                allocationStatus: 'فترة اعتماد 14 يوم',
                 isDedicated: false,
                 category: 'food-health',
                 icon: 'utensils',
@@ -499,8 +685,8 @@
                 id: 'craftsmen',
                 title: 'محلات حرفية وصيانة منزلية',
                 badge: 'سباكة، كهرباء، نجارة، نقاشة',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
+                verificationBadge: 'معتمد بالبطاقة ★',
+                allocationStatus: 'فترة اعتماد 14 يوم',
                 isDedicated: false,
                 category: 'crafts-auto',
                 icon: 'wrench',
@@ -518,8 +704,8 @@
                 id: 'auto-tech',
                 title: 'تقنية وخدمات السيارات',
                 badge: 'ميكانيكا، كهرباء سيارات، كاوتش',
-                verificationBadge: 'بيانات تجريبية - غير موثق',
-                allocationStatus: 'بيانات تجريبية',
+                verificationBadge: 'معتمد بالبطاقة ★',
+                allocationStatus: 'فترة اعتماد 14 يوم',
                 isDedicated: false,
                 category: 'crafts-auto',
                 icon: 'car',
@@ -539,10 +725,11 @@
         let currentModalMode = 'order'; // 'order' أو 'register'
         let selectedService = null;
         let currentMenuService = null;
+        let lastGeneratedActivation = null;
 
-        // جلب المنيو الخاص بكل محل من التخزين المحلي، أو استخدام المنيو الافتراضي.
+        // جلب المنيو الخاص بكل محل (من localStorage إذا تم رفع شيت إكسل، أو المنيو الافتراضي)
         function getServiceMenu(serviceId) {
-            const savedMenus = readCustomMenus();
+            const savedMenus = JSON.parse(localStorage.getItem('street_custom_menus') || '{}');
             if (savedMenus[serviceId] && savedMenus[serviceId].length > 0) {
                 return savedMenus[serviceId];
             }
@@ -575,52 +762,52 @@
             }
 
             emptyState.classList.add('hidden');
-            const savedMenus = readCustomMenus();
+            const savedMenus = JSON.parse(localStorage.getItem('street_custom_menus') || '{}');
 
             grid.innerHTML = filtered.map(service => {
                 const hasCustomSheet = Boolean(savedMenus[service.id] && savedMenus[service.id].length > 0);
                 
                 // شارة حالة التخصيص الاستثماري (مخصص ★ أو فترة اعتماد 14 يوم)
                 const allocationBadgeHtml = service.isDedicated
-                    ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300/70">${escapeHTML(service.allocationStatus)}</span>`
-                    : `<span class="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200/70">${escapeHTML(service.allocationStatus)}</span>`;
+                    ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300/70">${service.allocationStatus}</span>`
+                    : `<span class="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200/70">${service.allocationStatus}</span>`;
 
                 // شارة التوثيق (موثق بسجل تجاري ✓ أو معتمد بالبطاقة ★)
                 const isCommercialReg = service.verificationBadge.includes('سجل تجاري');
                 const verificationBadgeHtml = isCommercialReg
-                    ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800">${escapeHTML(service.verificationBadge)}</span>`
-                    : `<span class="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700">${escapeHTML(service.verificationBadge)}</span>`;
+                    ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800">${service.verificationBadge}</span>`
+                    : `<span class="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700">${service.verificationBadge}</span>`;
 
                 return `
                 <div class="service-card bg-white p-4 rounded-2xl shadow-xs border ${service.isDedicated ? 'border-amber-300/70' : 'border-stone-200/70'} hover:shadow-md hover:border-terracotta/50 transition">
                     <div class="flex items-start gap-3.5">
                         <div class="w-14 h-14 rounded-2xl ${service.colorClass} flex items-center justify-center shrink-0">
-                            <i data-lucide="${escapeHTML(service.icon)}" class="w-7 h-7"></i>
+                            <i data-lucide="${service.icon}" class="w-7 h-7"></i>
                         </div>
                         <div class="flex-grow min-w-0">
                             <div class="flex items-center gap-1.5 flex-wrap mb-1.5">
                                 <span class="inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-md ${service.badgeClass}">
-                                    ${escapeHTML(service.badge)}
+                                    ${service.badge}
                                 </span>
                                 ${allocationBadgeHtml}
                                 ${verificationBadgeHtml}
                                 ${hasCustomSheet ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700">منيو محدّث</span>` : ''}
                             </div>
-                            <h3 class="text-base font-extrabold text-stone-900 truncate">${escapeHTML(service.title)}</h3>
+                            <h3 class="text-base font-extrabold text-stone-900 truncate">${service.title}</h3>
                             <p class="text-xs text-stone-500 mt-0.5 line-clamp-2 leading-relaxed">
-                                ${escapeHTML(service.description)}
+                                ${service.description}
                             </p>
                         </div>
                     </div>
 
                     <!-- أزرار الإجراءات السريعة داخل البطاقة -->
                     <div class="grid grid-cols-2 gap-2 mt-3.5 pt-3 border-t border-stone-100">
-                        <button onclick="openMenuModal('${escapeHTML(service.id)}')" 
+                        <button onclick="openMenuModal('${service.id}')" 
                                 class="py-2.5 px-3 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-800 font-extrabold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
                             <i data-lucide="clipboard-list" class="w-4 h-4 text-terracotta"></i>
                             <span>المنيو والأسعار</span>
                         </button>
-                        <button onclick="openServiceModal('${escapeHTML(service.id)}')" 
+                        <button onclick="openServiceModal('${service.id}')" 
                                 class="py-2.5 px-3 rounded-xl bg-deepTeal hover:bg-deepTealLight text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-xs transition active:scale-95">
                             <i data-lucide="send" class="w-3.5 h-3.5 text-amber-300"></i>
                             <span>اطلب الآن</span>
@@ -668,13 +855,13 @@
 
             listEl.innerHTML = items.map(item => `
                 <label class="flex items-start gap-3 p-3 rounded-2xl border border-stone-200/80 bg-stone-50/60 hover:bg-amber-50/40 cursor-pointer transition">
-                    <input type="checkbox" value="${escapeHTML(item.name)} (${escapeHTML(item.price)})" onchange="updateMenuSelectionCount()" class="menu-item-chk mt-1 w-4 h-4 accent-deepTeal rounded">
+                    <input type="checkbox" value="${item.name} (${item.price})" onchange="updateMenuSelectionCount()" class="menu-item-chk mt-1 w-4 h-4 accent-deepTeal rounded">
                     <div class="flex-grow min-w-0">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="text-sm font-extrabold text-stone-900">${escapeHTML(item.name)}</span>
-                            <span class="text-xs font-extrabold text-terracottaDark bg-amber-100/80 px-2 py-0.5 rounded-lg shrink-0">${escapeHTML(item.price)}</span>
+                            <span class="text-sm font-extrabold text-stone-900">${item.name}</span>
+                            <span class="text-xs font-extrabold text-terracottaDark bg-amber-100/80 px-2 py-0.5 rounded-lg shrink-0">${item.price}</span>
                         </div>
-                        ${item.details ? `<p class="text-[11px] text-stone-500 mt-0.5">${escapeHTML(item.details)}</p>` : ''}
+                        ${item.details ? `<p class="text-[11px] text-stone-500 mt-0.5">${item.details}</p>` : ''}
                     </div>
                 </label>
             `).join('');
@@ -778,14 +965,8 @@
             const alertBox = document.getElementById('formAlert');
             const alertText = document.getElementById('formAlertText');
 
-            if (!name || !address || !phone || !details) {
-                alertText.textContent = 'من فضلك اكتب الاسم ورقم الموبايل والعنوان والتفاصيل المطلوبة.';
-                alertBox.classList.remove('hidden');
-                return;
-            }
-
-            if (!/^01[0125][0-9]{8}$/.test(phone)) {
-                alertText.textContent = 'رقم الموبايل غير صحيح. أدخل رقمًا مصريًا مكوّنًا من 11 رقمًا ويبدأ بـ 010 أو 011 أو 012 أو 015.';
+            if (!name || !address || !details) {
+                alertText.textContent = 'من فضلك اكتب الاسم، العنوان، وتفاصيل الطلب لإرساله.';
                 alertBox.classList.remove('hidden');
                 return;
             }
@@ -798,13 +979,9 @@
 
             alertBox.classList.add('hidden');
 
-            try {
-                localStorage.setItem('street_cust_name', name);
-                localStorage.setItem('street_cust_address', address);
-                localStorage.setItem('street_cust_phone', phone);
-            } catch (error) {
-                console.warn('تعذر حفظ بيانات العميل على هذا الجهاز:', error);
-            }
+            localStorage.setItem('street_cust_name', name);
+            localStorage.setItem('street_cust_address', address);
+            if (phone) localStorage.setItem('street_cust_phone', phone);
 
             let message = '';
             if (currentModalMode === 'register') {
@@ -838,8 +1015,268 @@ ${details}
             closeOrderModal();
         }
 
+        // ==========================================
+        // لوحة الإدارة: الباركود الخدمي للشارع، باركود التفعيل، وشيت الإكسل
+        // ==========================================
+        function openAdminModal() {
+            populateAdminSelects();
+            updateExcelStatus();
+            generateStreetServiceQR();
+            lucide.createIcons();
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('adminTabStreetQr').classList.toggle('hidden', tab !== 'streetQr');
+            document.getElementById('adminTabShopQr').classList.toggle('hidden', tab !== 'shopQr');
+            document.getElementById('adminTabExcel').classList.toggle('hidden', tab !== 'excel');
+
+            const tabs = {
+                streetQr: document.getElementById('tabBtnStreetQr'),
+                shopQr: document.getElementById('tabBtnShopQr'),
+                excel: document.getElementById('tabBtnExcel')
+            };
+
+            Object.keys(tabs).forEach(key => {
+                if (key === tab) {
+                    tabs[key].className = 'py-2.5 px-2 rounded-xl text-[11px] font-extrabold bg-white text-deepTeal shadow-xs transition flex items-center justify-center gap-1';
+                } else {
+                    tabs[key].className = 'py-2.5 px-2 rounded-xl text-[11px] font-bold text-stone-600 transition flex items-center justify-center gap-1';
+                }
+            });
+        }
+
+        function populateAdminSelects() {
+            const optionsHtml = servicesData.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
+            document.getElementById('qrShopCategory').innerHTML = optionsHtml;
+            document.getElementById('excelShopCategory').innerHTML = optionsHtml;
+        }
+
+        // توليد الباركود الخدمي العام للشارع ونادي الكوم الأخضر
+        function generateStreetServiceQR() {
+            const pointName = document.getElementById('streetPointName').value.trim() || 'الشارع الرئيسي ومحيط نادي الكوم الأخضر';
+            document.getElementById('streetPointDisplay').textContent = pointName;
+
+            const baseUrl = window.location.href.split('?')[0];
+            const streetLink = `${baseUrl}?hub=alkom_alakhdar&point=${encodeURIComponent(pointName)}`;
+
+            const container = document.getElementById('streetQrcodeContainer');
+            container.innerHTML = '';
+            new QRCode(container, {
+                text: streetLink,
+                width: 175,
+                height: 175,
+                colorDark: '#1E3A3A',
+                colorLight: '#FFFFFF',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        // توليد باركود التفعيل الخاص بكل محل مع اختيار حالة الاشتراك (14 يوم أو تخصيص 500 جنيه)
+        function generateActivationQR() {
+            const catId = document.getElementById('qrShopCategory').value;
+            const tier = document.getElementById('qrActivationTier').value;
+            const shopName = document.getElementById('qrShopName').value.trim();
+            const docBadge = document.getElementById('qrShopDoc').value;
+            const shopCode = document.getElementById('qrShopCode').value.trim() || (tier === 'dedicated500' ? 'VIP-500-' : 'TRIAL14-') + Math.floor(100 + Math.random() * 900);
+
+            if (!shopName) {
+                document.getElementById('qrShopName').focus();
+                return;
+            }
+
+            const service = servicesData.find(s => s.id === catId);
+            const isDedicated = tier === 'dedicated500';
+            const tierLabel = isDedicated 
+                ? 'تخصيص مستقل (تم سداد عربون 500 جنيه) ★' 
+                : 'اعتماد تجريبي (14 يوم على الموقع العام)';
+
+            const baseUrl = window.location.href.split('?')[0];
+            const activationLink = `${baseUrl}?activate=${encodeURIComponent(shopName)}&cat=${catId}&tier=${tier}`;
+
+            const tierBadgeEl = document.getElementById('qrDisplayTierBadge');
+            tierBadgeEl.textContent = tierLabel;
+            tierBadgeEl.className = isDedicated
+                ? 'inline-block px-3 py-1 rounded-full bg-amber-500 text-white text-[11px] font-extrabold mb-2 shadow-2xs'
+                : 'inline-block px-3 py-1 rounded-full bg-deepTeal text-amber-200 text-[11px] font-extrabold mb-2';
+
+            document.getElementById('qrDisplayShopName').textContent = `${shopName} (${docBadge})`;
+            document.getElementById('qrDisplayCategory').textContent = service ? service.title : '';
+            document.getElementById('qrDisplayNote').textContent = isDedicated
+                ? 'مُفعّل بصفحة مستقلة + منيو خاص + باركود مطبوع من المطبعة الرسمية ✓'
+                : 'مُفعّل بفترة اعتماد وتجربة 14 يوماً على الموقع العام (للتخصيص المستقل يُسدد عربون 500 ج)';
+            document.getElementById('qrDisplayCode').textContent = `كود التفعيل: ${shopCode}`;
+
+            const qrContainer = document.getElementById('qrcodeContainer');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: activationLink,
+                width: 170,
+                height: 170,
+                colorDark: '#1E3A3A',
+                colorLight: '#FFFFFF',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            lastGeneratedActivation = {
+                shopName,
+                categoryTitle: service ? service.title : '',
+                docBadge,
+                tierLabel,
+                isDedicated,
+                shopCode,
+                activationLink
+            };
+
+            document.getElementById('qrResultCard').classList.remove('hidden');
+        }
+
+        function shareActivationWhatsApp() {
+            if (!lastGeneratedActivation) return;
+            const { shopName, categoryTitle, docBadge, tierLabel, isDedicated, shopCode, activationLink } = lastGeneratedActivation;
+            
+            const nextStepNote = isDedicated
+                ? `✅ تم تفعيل *التخصيص المستقل* (سداد عربون 500 جنيه)، وجاري طباعة ستيكر الباركود الخاص بكم في المطبعة الرسمية وتجهيز منيو الأسعار الخاص.`
+                : `⏳ تم تفعيل *فترة الاعتماد التجريبية لمدة 14 يوماً* على الموقع العام. وبعد التجربة يمكنكم حجز التخصيص المستقل (صفحة خاصة + منيو + باركود مطبوع) بسداد عربون جدية 500 جنيه.`;
+
+            const text = 
+`أهلاً بك يا فندم في *منصة خدمات الشارع ونادي الكوم الأخضر* 🏘️✨
+
+تم إصدار *باركود ورابط التفعيل الخاص بنشاطكم*:
+🏪 *الاسم:* ${shopName} (${docBadge})
+📂 *القسم:* ${categoryTitle}
+💎 *حالة الاشتراك:* ${tierLabel}
+🔑 *كود التفعيل:* ${shopCode}
+
+${nextStepNote}
+
+اضغط على الرابط أو امسح الباركود لتأكيد التفعيل:
+${activationLink}`;
+
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // إدارة شيت الإكسل (CSV) للمنيو
+        function updateExcelStatus() {
+            const catId = document.getElementById('excelShopCategory').value;
+            const items = getServiceMenu(catId);
+            const savedMenus = JSON.parse(localStorage.getItem('street_custom_menus') || '{}');
+            const isCustom = Boolean(savedMenus[catId]);
+            document.getElementById('excelCurrentCount').textContent = isCustom 
+                ? `✅ يوجد شيت مخصص مرفوع حالياً (${items.length} صنف)` 
+                : `ℹ️ يستخدم القائمة الافتراضية حالياً (${items.length} صنف)`;
+        }
+
+        function downloadExcelTemplate() {
+            if (typeof XLSX === 'undefined') {
+                showExcelAlert('تعذر تحميل مكتبة Excel. تأكد من اتصال الإنترنت ثم أعد المحاولة.', false);
+                return;
+            }
+            const catId = document.getElementById('excelShopCategory').value;
+            const service = servicesData.find(s => s.id === catId);
+            const currentItems = getServiceMenu(catId);
+            const rows = [['اسم الصنف', 'السعر', 'التفاصيل'], ...currentItems.map(item => [item.name || '', item.price || '', item.details || ''])];
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            ws['!cols'] = [{wch:30},{wch:18},{wch:48}];
+            XLSX.utils.book_append_sheet(wb, ws, 'المنيو والأسعار');
+            const guide = XLSX.utils.aoa_to_sheet([
+                ['تعليمات تعديل الملف'],
+                ['اكتب كل صنف في صف مستقل تحت الأعمدة الثلاثة.'],
+                ['اسم الصنف: مطلوب. السعر: اكتب السعر أو حسب الطلب. التفاصيل: وصف مختصر اختياري.'],
+                ['لا تغيّر أسماء الأعمدة في الصف الأول.'],
+                ['بعد الحفظ، ارفع الملف من لوحة الإدارة واختر نفس القسم.'],
+                ['ملاحظة: التحديث الحالي يُحفظ محليًا على نفس الجهاز والمتصفح.']
+            ]);
+            guide['!cols'] = [{wch:100}];
+            XLSX.utils.book_append_sheet(wb, guide, 'تعليمات');
+            XLSX.writeFile(wb, `منيو_${service ? service.id : 'القسم'}.xlsx`);
+        }
+
+        function downloadCsvTemplate() {
+            const catId = document.getElementById('excelShopCategory').value;
+            const service = servicesData.find(s => s.id === catId);
+            const currentItems = getServiceMenu(catId);
+            let csvContent = '\uFEFFاسم الصنف,السعر,التفاصيل\n';
+            currentItems.forEach(item => {
+                const vals = [item.name || '', item.price || '', item.details || ''].map(v => `"${String(v).replace(/"/g, '""')}"`);
+                csvContent += vals.join(',') + '\n';
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `منيو_${service ? service.id : 'القسم'}.csv`;
+            document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+        }
+
+        function showExcelAlert(message, success) {
+            const alertEl = document.getElementById('excelUploadAlert');
+            alertEl.className = `p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${success ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`;
+            alertEl.textContent = message;
+            alertEl.classList.remove('hidden');
+        }
+
+        function handleCsvUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const catId = document.getElementById('excelShopCategory').value;
+            const isExcel = /\.xlsx?$/i.test(file.name);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let rows;
+                    if (isExcel) {
+                        if (typeof XLSX === 'undefined') throw new Error('مكتبة Excel غير متاحة. تأكد من الإنترنت.');
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, {type:'array'});
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        rows = XLSX.utils.sheet_to_json(firstSheet, {header:1, defval:''});
+                    } else {
+                        const text = e.target.result.replace(/^\uFEFF/, '');
+                        rows = text.split(/\r?\n/).filter(line => line.trim()).map(line => line.split(','));
+                    }
+                    if (!rows || rows.length < 2) throw new Error('الملف فارغ أو لا يحتوي على أصناف.');
+                    const parsedItems = rows.slice(1).map(row => ({
+                        name: String(row[0] || '').trim(),
+                        price: String(row[1] || 'حسب الطلب').trim(),
+                        details: String(row[2] || '').trim()
+                    })).filter(item => item.name);
+                    if (!parsedItems.length) throw new Error('لم يتم العثور على أصناف. تأكد أن العمود الأول يحتوي على اسم الصنف.');
+                    const savedMenus = JSON.parse(localStorage.getItem('street_custom_menus') || '{}');
+                    savedMenus[catId] = parsedItems;
+                    localStorage.setItem('street_custom_menus', JSON.stringify(savedMenus));
+                    showExcelAlert(`تم تحديث القائمة بنجاح: ${parsedItems.length} صنف. الحفظ على هذا الجهاز فقط.`, true);
+                    updateExcelStatus(); renderServices(); lucide.createIcons();
+                } catch (err) {
+                    showExcelAlert(err.message || 'حدث خطأ أثناء قراءة الملف.', false);
+                    lucide.createIcons();
+                }
+                event.target.value = '';
+            };
+            if (isExcel) reader.readAsArrayBuffer(file); else reader.readAsText(file, 'UTF-8');
+        }
+
+        // التحقق من وجود رابط تفعيل في العنوان عند مسح الباركود
+        function checkActivationParam() {
+            const params = new URLSearchParams(window.location.search);
+            const activatedShop = params.get('activate');
+            const tier = params.get('tier');
+            if (activatedShop) {
+                document.getElementById('activatedShopTitle').textContent = `أهلاً بك: ${activatedShop}`;
+                document.getElementById('activatedTierBadge').textContent = tier === 'dedicated500'
+                    ? 'تم تفعيل التخصيص المستقل (عربون 500 جنيه) ★'
+                    : 'تم تفعيل فترة الاعتماد التجريبية (14 يوم على الموقع العام)';
+                document.getElementById('activationWelcomeBanner').classList.remove('hidden');
+            }
+        }
+
         // إغلاق النوافذ عند الضغط على الخلفية
-        ['orderModal', 'menuModal'].forEach(modalId => {
+        ['orderModal', 'menuModal', 'adminModal'].forEach(modalId => {
             document.getElementById(modalId).addEventListener('click', function(e) {
                 if (e.target === this) this.classList.add('hidden');
             });
@@ -847,6 +1284,7 @@ ${details}
 
         // التشغيل المبدئي عند تحميل الصفحة
         window.addEventListener('DOMContentLoaded', () => {
+            checkActivationParam();
             renderServices();
         });
     </script>
