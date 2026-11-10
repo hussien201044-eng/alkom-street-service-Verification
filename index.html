@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة خدمات الشارع ونادي الكوم الأخضر | دليلك الشامل</title>
     <!-- تحميل Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <!-- تحميل خط Cairo و Tajawal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
     <!-- تحميل أيقونات Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.468.0"></script>
     <!-- تحميل مكتبة توليد الباركود QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- قراءة وكتابة ملفات Excel بصيغة XLSX -->
@@ -121,7 +121,8 @@
     </header>
 
     <!-- شريط التصنيفات السريعة -->
-    <nav class="max-w-lg w-full mx-auto px-4 mt-4">
+    <div class="max-w-lg w-full mx-auto px-4 mt-3"><div class="text-[11px] text-center font-bold bg-amber-100 border border-amber-300 text-amber-900 rounded-xl px-3 py-2">نسخة تجريبية للأهالي. منصة مستقلة غير تابعة لأي جهة حكومية، وبيانات بعض المحلات للتجربة.</div></div>
+<nav class="max-w-lg w-full mx-auto px-4 mt-4">
         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="categoryTabs">
             <button onclick="setCategory('all', this)" class="cat-btn active shrink-0 px-4 py-2 rounded-xl text-xs font-extrabold bg-deepTeal text-white shadow-sm transition">
                 الكل (10)
@@ -372,7 +373,7 @@
             </div>
 
             <!-- أزرار التبويب الثلاثة -->
-            <div class="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-2xl mb-5">
+            <div class="grid grid-cols-4 gap-1.5 p-1 bg-stone-100 rounded-2xl mb-5">
                 <button id="tabBtnStreetQr" onclick="switchAdminTab('streetQr')" class="py-2.5 px-2 rounded-xl text-[11px] font-extrabold bg-white text-deepTeal shadow-xs transition flex items-center justify-center gap-1">
                     <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
                     <span>باركود الشارع</span>
@@ -385,9 +386,32 @@
                     <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
                     <span>شيت المنيو</span>
                 </button>
+                <button id="tabBtnDash" onclick="switchAdminTab('dash')" class="py-2.5 px-2 rounded-xl text-[11px] font-bold text-stone-600 transition flex items-center justify-center gap-1">
+                    <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+                    <span>لوحة التحكم</span>
+                </button>
             </div>
 
             <!-- التبويب الأول: الباركود الخدمي العام للشارع ونادي الكوم الأخضر -->
+            <div id="adminTabDash" class="hidden space-y-4">
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3"><div id="dStatOrders" class="text-xl font-extrabold text-stone-800">0</div><div class="text-[10px] text-stone-500">طلبات واتساب</div></div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3"><div id="dStatShops" class="text-xl font-extrabold text-stone-800">0</div><div class="text-[10px] text-stone-500">محلات مفعّلة</div></div>
+                    <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3"><div id="dStatSoon" class="text-xl font-extrabold text-stone-800">0</div><div class="text-[10px] text-stone-500">تجربة تنتهي قريباً</div></div>
+                </div>
+                <div class="bg-white border border-stone-200 rounded-2xl p-3"><div class="text-xs font-extrabold mb-2">الطلبات حسب الخدمة</div><div id="dChartService" class="space-y-1.5"></div></div>
+                <div class="bg-white border border-stone-200 rounded-2xl p-3"><div class="text-xs font-extrabold mb-2">آخر 7 أيام</div><div id="dChart7" class="flex items-end gap-1.5 h-24"></div></div>
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3"><div class="text-xs font-extrabold mb-1">التحليل</div><div id="dInsights" class="text-[11px] leading-relaxed text-stone-700"></div></div>
+                <div class="bg-white border border-stone-200 rounded-2xl p-3"><div class="text-xs font-extrabold mb-2">المحلات المفعّلة والتجارب</div><div id="dTrials" class="space-y-2"></div></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="renderDashboard()" class="py-2.5 rounded-xl bg-stone-800 text-white text-xs font-bold">تحديث الأرقام</button>
+                    <button onclick="sendDashReport()" class="py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold">تقرير على واتساب</button>
+                    <button onclick="exportDashExcel()" class="py-2.5 rounded-xl bg-amber-500 text-white text-xs font-bold">تصدير Excel</button>
+                    <button onclick="clearDashLog()" class="py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold">مسح سجل الطلبات</button>
+                </div>
+                <p class="text-[10px] text-stone-400">الأرقام محفوظة على هذا الجهاز والمتصفح فقط.</p>
+            </div>
+
             <div id="adminTabStreetQr" class="space-y-4">
                 <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 text-xs text-stone-800 leading-relaxed">
                     <p class="font-extrabold text-deepTeal mb-1">الباركود الخدمي للشارع ومحيط نادي الكوم الأخضر:</p>
@@ -1011,6 +1035,7 @@ ${details}
             }
 
             const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            logOrder(currentModalMode === 'register' ? 'تسجيل محل جديد' : (selectedService ? selectedService.title : 'غير محدد'), currentModalMode);
             window.open(waUrl, '_blank');
             closeOrderModal();
         }
@@ -1018,7 +1043,96 @@ ${details}
         // ==========================================
         // لوحة الإدارة: الباركود الخدمي للشارع، باركود التفعيل، وشيت الإكسل
         // ==========================================
+
+        // ==========================================
+        // لوحة التحكم: رسوم بيانية وتحليل وأزرار سريعة
+        // ==========================================
+        function dashGet(k) { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch (e) { return []; } }
+        function dashSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+        function esc(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function logOrder(service, mode) {
+            const a = dashGet('street_orders_log'); a.push({ t: Date.now(), service: service, mode: mode });
+            dashSet('street_orders_log', a);
+        }
+        function logActivation(name, cat, tier) {
+            const a = dashGet('street_activations').filter(x => !(x.name === name && x.cat === cat));
+            a.push({ name: name, cat: cat, tier: tier, start: Date.now(), days: tier === 'dedicated500' ? 0 : 14 });
+            dashSet('street_activations', a);
+        }
+        function daysLeft(x) { return x.days ? Math.ceil((x.start + x.days * 864e5 - Date.now()) / 864e5) : null; }
+        function extendTrial(i) { const a = dashGet('street_activations'); if (a[i]) { a[i].days += 14; dashSet('street_activations', a); renderDashboard(); } }
+        function removeActivation(i) { const a = dashGet('street_activations'); a.splice(i, 1); dashSet('street_activations', a); renderDashboard(); }
+        function clearDashLog() { if (confirm('مسح سجل الطلبات كله؟')) { dashSet('street_orders_log', []); renderDashboard(); } }
+        function dashStats() {
+            const orders = dashGet('street_orders_log'), acts = dashGet('street_activations');
+            const by = {}; orders.forEach(o => { by[o.service] = (by[o.service] || 0) + 1; });
+            const top = Object.entries(by).sort((p, q) => q[1] - p[1]);
+            const days = []; for (let d = 6; d >= 0; d--) { const st = new Date(); st.setHours(0,0,0,0); st.setDate(st.getDate() - d); days.push({ st: st.getTime(), n: 0, label: st.toLocaleDateString('ar-EG', { weekday: 'short' }) }); }
+            orders.forEach(o => { for (let i = days.length - 1; i >= 0; i--) { if (o.t >= days[i].st) { days[i].n++; break; } } });
+            const soon = acts.filter(x => { const d = daysLeft(x); return d !== null && d <= 3; });
+            return { orders, acts, top, days, soon };
+        }
+        function renderDashboard() {
+            const S = dashStats();
+            document.getElementById('dStatOrders').textContent = S.orders.length;
+            document.getElementById('dStatShops').textContent = S.acts.length;
+            document.getElementById('dStatSoon').textContent = S.soon.length;
+            const max = S.top.length ? S.top[0][1] : 1;
+            document.getElementById('dChartService').innerHTML = S.top.length ? S.top.slice(0, 6).map(([k, n]) =>
+                `<div><div class="flex justify-between text-[10px] mb-0.5"><span>${esc(k)}</span><b>${n}</b></div><div class="h-2 bg-stone-100 rounded-full"><div class="h-2 bg-amber-500 rounded-full" style="width:${Math.round(n / max * 100)}%"></div></div></div>`).join('')
+                : '<p class="text-[11px] text-stone-400">لسه مفيش طلبات مسجلة.</p>';
+            const m7 = Math.max(1, ...S.days.map(d => d.n));
+            document.getElementById('dChart7').innerHTML = S.days.map(d =>
+                `<div class="flex-1 flex flex-col items-center justify-end h-full"><span class="text-[9px] font-bold">${d.n}</span><div class="w-full bg-emerald-500 rounded-t" style="height:${Math.round(d.n / m7 * 70) + 2}px"></div><span class="text-[9px] text-stone-500 mt-0.5">${d.label}</span></div>`).join('');
+            const ins = [];
+            if (S.top.length) ins.push(`أكتر خدمة مطلوبة: <b>${esc(S.top[0][0])}</b> (${S.top[0][1]} طلب).`);
+            const best = S.days.slice().sort((p, q) => q.n - p.n)[0];
+            if (best.n) ins.push(`أنشط يوم في آخر أسبوع: <b>${best.label}</b> (${best.n} طلب).`);
+            const reg = S.orders.filter(o => o.mode === 'register').length;
+            if (reg) ins.push(`طلبات تسجيل محلات جديدة: <b>${reg}</b>.`);
+            if (S.soon.length) ins.push(`<b>${S.soon.length}</b> محل تجربته هتخلص خلال 3 أيام، تابعهم.`);
+            const never = servicesData.filter(s => !S.top.some(t => t[0] === s.title)).length;
+            if (S.orders.length) ins.push(`تصنيفات من غير أي طلب: <b>${never}</b> من ${servicesData.length}.`);
+            document.getElementById('dInsights').innerHTML = ins.length ? ins.join('<br>') : 'التحليل هيظهر أول ما تتسجل طلبات.';
+            document.getElementById('dTrials').innerHTML = S.acts.length ? S.acts.map((x, i) => {
+                const d = daysLeft(x);
+                const tag = d === null ? '<span class="text-amber-600">مخصص</span>' : (d < 0 ? '<span class="text-rose-600">انتهت</span>' : `<span class="text-emerald-700">باقي ${d} يوم</span>`);
+                return `<div class="flex items-center justify-between gap-2 text-[11px]"><span class="font-bold">${esc(x.name)}</span><span>${tag}</span><span class="flex gap-1">${d === null ? '' : `<button onclick="extendTrial(${i})" class="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800">تمديد 14</button>`}<button onclick="removeActivation(${i})" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-700">حذف</button></span></div>`;
+            }).join('') : '<p class="text-[11px] text-stone-400">أي محل تفعّله من تبويب باركود التفعيل هيظهر هنا.</p>';
+        }
+        function sendDashReport() {
+            const S = dashStats();
+            const lines = ['تقرير منصة خدمات الشارع', `الطلبات: ${S.orders.length}`, `المحلات المفعّلة: ${S.acts.length}`, `تجارب قربت تخلص: ${S.soon.length}`];
+            S.top.slice(0, 3).forEach(([k, n], i) => lines.push(`${i + 1}. ${k}: ${n}`));
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+        }
+        function exportDashExcel() {
+            const o = dashGet('street_orders_log');
+            if (!o.length) { alert('مفيش طلبات تتصدّر.'); return; }
+            const rows = o.map(x => ({ 'التاريخ': new Date(x.t).toLocaleString('ar-EG'), 'الخدمة': x.service, 'النوع': x.mode === 'register' ? 'تسجيل محل' : 'طلب' }));
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'الطلبات');
+            XLSX.writeFile(wb, 'street_orders.xlsx');
+        }
+
+        function adminHash(str) {
+            let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+            for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+            return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+        }
         function openAdminModal() {
+            let ok = false;
+            try { ok = sessionStorage.getItem('street_admin_ok') === '1'; } catch (e) {}
+            if (!ok) {
+                const pw = prompt('كلمة سر الإدارة:');
+                if (pw === null) return;
+                if (adminHash(pw) !== 5910052648880040) { alert('كلمة السر غلط.'); return; }
+                try { sessionStorage.setItem('street_admin_ok', '1'); } catch (e) {}
+            }
+            openAdminModalReal();
+        }
+        function openAdminModalReal() {
             populateAdminSelects();
             updateExcelStatus();
             generateStreetServiceQR();
@@ -1034,11 +1148,14 @@ ${details}
             document.getElementById('adminTabStreetQr').classList.toggle('hidden', tab !== 'streetQr');
             document.getElementById('adminTabShopQr').classList.toggle('hidden', tab !== 'shopQr');
             document.getElementById('adminTabExcel').classList.toggle('hidden', tab !== 'excel');
+            document.getElementById('adminTabDash').classList.toggle('hidden', tab !== 'dash');
+            if (tab === 'dash') renderDashboard();
 
             const tabs = {
                 streetQr: document.getElementById('tabBtnStreetQr'),
                 shopQr: document.getElementById('tabBtnShopQr'),
-                excel: document.getElementById('tabBtnExcel')
+                excel: document.getElementById('tabBtnExcel'),
+                dash: document.getElementById('tabBtnDash')
             };
 
             Object.keys(tabs).forEach(key => {
@@ -1097,6 +1214,7 @@ ${details}
 
             const baseUrl = window.location.href.split('?')[0];
             const activationLink = `${baseUrl}?activate=${encodeURIComponent(shopName)}&cat=${catId}&tier=${tier}`;
+            logActivation(shopName, catId, tier);
 
             const tierBadgeEl = document.getElementById('qrDisplayTierBadge');
             tierBadgeEl.textContent = tierLabel;
